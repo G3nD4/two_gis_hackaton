@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:two_gis_hackaton/core/di/service_locator.dart';
 import 'package:two_gis_hackaton/features/map/ui/map_page.dart';
 import 'package:two_gis_hackaton/features/questionnary/domain/models/survey_result.dart';
-import 'package:two_gis_hackaton/features/questionnary/domain/usecases/send_survey_usecase.dart';
+import 'package:two_gis_hackaton/features/questionnary/domain/repositories/i_prefs_repository.dart';
 
 class InterestsSurveyWidget extends StatefulWidget {
   final List<String> interests;
-  final SendSurveyUseCase sendSurveyUseCase;
 
-  const InterestsSurveyWidget({
-    super.key,
-    required this.interests,
-    required this.sendSurveyUseCase,
-  });
+  const InterestsSurveyWidget({super.key, required this.interests});
 
   @override
   State<InterestsSurveyWidget> createState() => _InterestsSurveyWidgetState();
@@ -27,21 +23,33 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
   }
 
   void _toggleInterest(String interest) {
-    setState(() => selectedInterests[interest] = !(selectedInterests[interest] ?? false));
+    setState(
+      () =>
+          selectedInterests[interest] = !(selectedInterests[interest] ?? false),
+    );
   }
 
   Future<void> _onContinuePressed() async {
-    final chosen = selectedInterests.entries.where((e) => e.value).map((e) => e.key).toList();
+    final chosen = selectedInterests.entries
+        .where((e) => e.value)
+        .map((e) => e.key)
+        .toList();
 
-    final result = SurveyResult(chosen);
-    final success = await widget.sendSurveyUseCase.execute(result);
+    final result = UserPreferences(chosen);
 
-    if (!mounted) return;
-    if (success) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MapScreen()));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Не удалось отправить результаты')));
-    }
+    sl
+        .get<IPrefsRepository>()
+        .updateUserPreferences(result)
+        .then(
+          (value) => {
+            if (value && mounted)
+              {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const MapScreen()),
+                ),
+              },
+          },
+        );
   }
 
   @override
@@ -68,7 +76,9 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                     side: BorderSide(
-                      color: isSelected ? Colors.transparent : const Color(0xFF2FAD00),
+                      color: isSelected
+                          ? Colors.transparent
+                          : const Color(0xFF2FAD00),
                       width: 2,
                     ),
                   ),

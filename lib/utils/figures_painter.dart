@@ -1,16 +1,26 @@
 import 'dart:math' as math;
 
 import 'package:dgis_mobile_sdk_full/dgis.dart' as sdk;
+import 'package:two_gis_hackaton/features/questionnary/domain/models/polygon_model.dart';
 
 final class MapPainter {
   const MapPainter(this._manager);
 
   final sdk.MapObjectManager _manager;
 
-  void addHexagon(
-    sdk.GeoPoint center,
-    double radiusMeters,
-  ) {
+  void addPolygon(PolygonModel polygon) => _manager.addObject(
+    sdk.Polygon(  
+      sdk.PolygonOptions(
+        contours: [polygon.points],
+        strokeWidth: sdk.LogicalPixel(2),
+        userData: 'hexagon',
+        color: sdk.Color(polygon.color.toARGB32()),
+        strokeColor: sdk.Color(0x00000000),
+      ),
+    ),
+  );
+
+  void addHexagon(sdk.GeoPoint center, double radiusMeters) {
     const int sides = 6;
     const double R = 6371000.0; // Earth's radius in meters
     final lat1 = center.latitude.value * math.pi / 180.0;

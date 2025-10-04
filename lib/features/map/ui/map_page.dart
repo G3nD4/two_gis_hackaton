@@ -1,6 +1,11 @@
 import 'package:dgis_mobile_sdk_full/dgis.dart' as sdk;
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:two_gis_hackaton/core/di/service_locator.dart';
+import 'package:two_gis_hackaton/features/questionnary/domain/models/ranking_model.dart';
+import 'package:two_gis_hackaton/features/questionnary/domain/repositories/i_prefs_repository.dart';
+import 'package:two_gis_hackaton/features/questionnary/domain/repositories/polygon_repository.dart';
+import 'package:two_gis_hackaton/utils/figures_painter.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -13,6 +18,7 @@ class _MapScreenState extends State<MapScreen> {
   final _mapController = sdk.MapWidgetController();
   final _sdkContext = AppContainer().initializeSdk();
   late final sdk.LocationService _locationService;
+  sdk.MapObjectManager? _mapObjectManager;
 
   @override
   void initState() {
@@ -29,7 +35,29 @@ class _MapScreenState extends State<MapScreen> {
           ),
           zoom: sdk.Zoom(10),
         );
+        _mapObjectManager = sdk.MapObjectManager(map);
+
+        // Get polygons to display on the map
+        _getPolygons();
       });
+    });
+  }
+
+  Future<void> _getPolygons() async {
+    sl.get<IPrefsRepository>().getUserPreferences().then((prefs) {
+      if (prefs != null) {
+        sl.get<IPolygonRepository>().getPolygons(prefs, 1).then((
+          RankingModel? rank,
+        ) {
+          if (rank != null &&
+              rank.items.isNotEmpty &&
+              _mapObjectManager != null) {
+            _mapController.getMapAsync((map) {
+              rank.items.forEach(MapPainter(_mapObjectManager!).addPolygon);
+            });
+          }
+        });
+      }
     });
   }
 

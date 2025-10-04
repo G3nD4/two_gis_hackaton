@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:two_gis_hackaton/core/di/service_locator.dart' as di;
-import 'package:two_gis_hackaton/features/questionnary/domain/usecases/send_survey_usecase.dart';
+import 'package:two_gis_hackaton/core/launch_mode.dart';
 import 'package:two_gis_hackaton/core/i_startup_service.dart';
 import 'package:two_gis_hackaton/features/questionnary/ui/pages/questionnary_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await di.setupServiceLocator();
+  await di.setupServiceLocator(mode: LaunchMode.release);
 
   runApp(App());
 }
@@ -16,16 +16,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sendSurveyUseCase = di.sl<SendSurveyUseCase>();
-    final startupService = di.sl();
+    final startupService = di.sl<IStartupService>();
 
     return MaterialApp(
       title: 'Two GIS Hackaton',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SplashScreen(
-        startupService: startupService,
-        sendSurveyUseCase: sendSurveyUseCase,
-      ),
+      home: SplashScreen(startupService: startupService),
     );
   }
 }
@@ -34,9 +30,8 @@ class App extends StatelessWidget {
 /// the main UI. If fetching fails, user can retry.
 class SplashScreen extends StatefulWidget {
   final IStartupService startupService;
-  final SendSurveyUseCase sendSurveyUseCase;
 
-  const SplashScreen({super.key, required this.startupService, required this.sendSurveyUseCase});
+  const SplashScreen({super.key, required this.startupService});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -63,12 +58,9 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
 
       // Navigate to QuestionnaryPage and inject the usecase
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => QuestionnaryPage(
-          interests: data,
-          sendSurveyUseCase: widget.sendSurveyUseCase,
-        ),
-      ));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => QuestionnaryPage(interests: data)),
+      );
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -91,21 +83,21 @@ class _SplashScreenState extends State<SplashScreen> {
                 ],
               )
             : _error != null
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Ошибка инициализации:\n\n$_error',
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: _doStartup,
-                        child: const Text('Повторить'),
-                      ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Ошибка инициализации:\n\n$_error',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: _doStartup,
+                    child: const Text('Повторить'),
+                  ),
+                ],
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }
