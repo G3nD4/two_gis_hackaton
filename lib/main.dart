@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:two_gis_hackaton/core/i_startup_service.dart';
 import 'package:two_gis_hackaton/core/startup/mock_startup_service.dart';
+import 'package:two_gis_hackaton/survey_widget.dart';
 
 void main() => runApp(const App());
 
@@ -104,8 +105,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Two GIS Hackaton')),
-      body: Center(
-        child: Text('App initialized. Received: ${surveyData.length} titles'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(child: InterestsSurveyWidget(interests: surveyData)),
       ),
     );
   }

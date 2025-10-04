@@ -2,31 +2,14 @@ import 'package:dgis_mobile_sdk_full/dgis.dart' as sdk;
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-void main() {
-  runApp(const SimpleMapApp());
-}
-
-class SimpleMapApp extends StatelessWidget {
-  const SimpleMapApp({super.key});
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '2GIS Simple Map',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SimpleMapScreen(),
-    );
-  }
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class SimpleMapScreen extends StatefulWidget {
-  const SimpleMapScreen({super.key});
-
-  @override
-  State<SimpleMapScreen> createState() => _SimpleMapScreenState();
-}
-
-class _SimpleMapScreenState extends State<SimpleMapScreen> {
+class _MapScreenState extends State<MapScreen> {
   final _mapController = sdk.MapWidgetController();
   final _sdkContext = AppContainer().initializeSdk();
   late final sdk.LocationService _locationService;

@@ -1,17 +1,7 @@
 class SurveyResult {
-  final String userId;
-  final Map<String, dynamic> answers;
-  final DateTime submittedAt;
+  final List<String> selected;
 
-  SurveyResult({
-    required this.userId,
-    required this.answers,
-    DateTime? submittedAt,
-  }) : submittedAt = submittedAt ?? DateTime.now();
+  SurveyResult(this.selected);
 
-  Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'answers': answers,
-        'submittedAt': submittedAt.toIso8601String(),
-      };
+  Map<String, dynamic> toJson() => {'selected': selected};
 }
