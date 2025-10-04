@@ -9,8 +9,7 @@ class PolygonModel {
 
   Color get color {
     if (score < 0.5) return Colors.transparent;
-    if (score < 0.75) return Colors.yellow.withAlpha(100);
-    return Colors.green.withAlpha(100);
+    return Color.lerp(Colors.yellow, Colors.green, score)!.withAlpha(155);
   }
 
   factory PolygonModel.fromJson(Map<String, dynamic> json) {
