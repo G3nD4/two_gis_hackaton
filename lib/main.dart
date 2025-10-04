@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:two_gis_hackaton/core/di/service_locator.dart' as di;
+import 'package:two_gis_hackaton/features/questionnary/domain/usecases/send_survey_usecase.dart';
 import 'package:two_gis_hackaton/core/i_startup_service.dart';
-import 'package:two_gis_hackaton/core/startup/mock_startup_service.dart';
-import 'package:two_gis_hackaton/survey_widget.dart';
+import 'package:two_gis_hackaton/features/questionnary/ui/pages/questionnary_page.dart';
 
-void main() => runApp(const App());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.setupServiceLocator();
+
+  runApp(App());
+}
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final sendSurveyUseCase = di.sl<SendSurveyUseCase>();
+    final startupService = di.sl();
+
     return MaterialApp(
       title: 'Two GIS Hackaton',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SplashScreen(),
+      home: SplashScreen(
+        startupService: startupService,
+        sendSurveyUseCase: sendSurveyUseCase,
+      ),
     );
   }
 }
@@ -21,14 +33,16 @@ class App extends StatelessWidget {
 /// Splash screen which performs a required startup fetch before showing
 /// the main UI. If fetching fails, user can retry.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final IStartupService startupService;
+  final SendSurveyUseCase sendSurveyUseCase;
+
+  const SplashScreen({super.key, required this.startupService, required this.sendSurveyUseCase});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final IStartupService _startupService = MockStartupService();
   bool _loading = true;
   String? _error;
 
@@ -45,13 +59,16 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     try {
-      final data = await _startupService.fetchSurveyData();
-      // You can pass `data` to HomeScreen via constructor or a state management
-      // solution. For now we ignore it and show the main UI.
+      final data = await widget.startupService.fetchSurveyData();
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomeScreen(surveyData: data)),
-      );
+
+      // Navigate to QuestionnaryPage and inject the usecase
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => QuestionnaryPage(
+          interests: data,
+          sendSurveyUseCase: widget.sendSurveyUseCase,
+        ),
+      ));
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -74,40 +91,21 @@ class _SplashScreenState extends State<SplashScreen> {
                 ],
               )
             : _error != null
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Ошибка инициализации:\n\n$_error',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: _doStartup,
-                    child: const Text('Повторить'),
-                  ),
-                ],
-              )
-            : const SizedBox.shrink(),
-      ),
-    );
-  }
-}
-
-/// Minimal HomeScreen — previously the app's main screen. Kept small so it is
-/// easy to replace with the full map screen used earlier.
-class HomeScreen extends StatelessWidget {
-  final List<String> surveyData;
-
-  const HomeScreen({super.key, required this.surveyData});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Two GIS Hackaton')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(child: InterestsSurveyWidget(interests: surveyData)),
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Ошибка инициализации:\n\n$_error',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: _doStartup,
+                        child: const Text('Повторить'),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
       ),
     );
   }

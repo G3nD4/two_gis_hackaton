@@ -1,5 +1,4 @@
-import 'package:two_gis_hackaton/http/i_http_client.dart';
-import 'package:two_gis_hackaton/http/app_http_client.dart';
+// Mock repository for questionnary feature. No HTTP client required here.
 import '../domain/models/survey_result.dart';
 import '../domain/repositories/questionnary_repository.dart';
 
