@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:two_gis_hackaton/i_http_client.dart';
+import 'package:two_gis_hackaton/http/i_http_client.dart';
 
-const String _baseUrl = 'https://api.two-gis.ru/';
+const String _baseUrl = 'https://representations-dock-lucas-officer.trycloudflare.com';
 
 final class AppHttpClient implements IHttpClient {
   /// Создает HTTP клиент
@@ -14,9 +14,9 @@ final class AppHttpClient implements IHttpClient {
 
     _httpClient.options
       ..baseUrl = _baseUrl
-      ..connectTimeout = const Duration(seconds: 5)
-      ..sendTimeout = const Duration(seconds: 7)
-      ..receiveTimeout = const Duration(seconds: 10)
+      ..connectTimeout = const Duration(seconds: 30)
+      ..sendTimeout = const Duration(seconds: 30)
+      ..receiveTimeout = const Duration(seconds: 30)
       ..headers = {'Content-Type': 'application/json'};
   }
 
