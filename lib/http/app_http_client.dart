@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:two_gis_hackaton/i_http_client.dart';
+import 'package:two_gis_hackaton/http/i_http_client.dart';
 
 const String _baseUrl = 'https://api.two-gis.ru/';
 
