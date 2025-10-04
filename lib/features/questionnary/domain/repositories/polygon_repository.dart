@@ -7,4 +7,6 @@ abstract class IPolygonRepository {
   /// Отправляет результат опроса на сервер
   /// Возвращает true при успешной отправке
   Future<RankingModel?> getPolygons(UserPreferences result, int page);
+
+  Stream<RankingModel?> watchPolygons(UserPreferences result);
 }
