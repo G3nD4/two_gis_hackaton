@@ -29,6 +29,9 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
     );
   }
 
+  bool get _nothingSelected =>
+      selectedInterests.values.every((isSelected) => !isSelected);
+
   Future<void> _onContinuePressed() async {
     final chosen = selectedInterests.entries
         .where((e) => e.value)
@@ -66,33 +69,44 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
           child: GridView.count(
             crossAxisCount: 2,
             crossAxisSpacing: 10,
-            mainAxisSpacing: 8,
-            childAspectRatio: 8,
+            mainAxisSpacing: 10,
+            childAspectRatio: 4,
             children: widget.interests.map((interest) {
               final isSelected = selectedInterests[interest] ?? false;
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
+              return OutlinedButton(
+                style: OutlinedButton.styleFrom(
                   foregroundColor: isSelected ? Colors.white : Colors.black,
+                  backgroundColor: isSelected
+                      ? const Color(0xFF2FAD00)
+                      : Colors.transparent,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(
-                      color: isSelected
-                          ? Colors.transparent
-                          : const Color(0xFF2FAD00),
-                      width: 2,
-                    ),
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                  elevation: isSelected ? 5 : 2,
+                  side: BorderSide(
+                    color: isSelected ? Colors.transparent : Colors.grey[400]!,
+                    width: 1,
+                  ),
                 ),
                 onPressed: () => _toggleInterest(interest),
-                child: Text(interest, style: const TextStyle(fontSize: 12)),
+                child: Text(interest, style: const TextStyle(fontSize: 14)),
               );
             }).toList(),
           ),
         ),
-        ElevatedButton(
-          onPressed: _onContinuePressed,
-          child: const Text('Продолжить'),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2FAD00),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            onPressed: _nothingSelected ? null : _onContinuePressed,
+            child: const Text('Продолжить', style: TextStyle(fontSize: 16)),
+          ),
         ),
       ],
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:two_gis_hackaton/survey_widget.dart';
+import 'package:two_gis_hackaton/features/questionnary/ui/survey_widget.dart';
 
 class QuestionnaryPage extends StatelessWidget {
   final List<String> interests;
