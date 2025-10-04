@@ -1,7 +1,6 @@
 import 'package:dgis_mobile_sdk_full/dgis.dart' as sdk;
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'utils/figures_painter.dart';
 
 void main() {
   runApp(const SimpleMapApp());
@@ -31,21 +30,23 @@ class _SimpleMapScreenState extends State<SimpleMapScreen> {
   final _mapController = sdk.MapWidgetController();
   final _sdkContext = AppContainer().initializeSdk();
   late final sdk.LocationService _locationService;
-  sdk.MapObjectManager? _mapObjectManager;
 
   @override
   void initState() {
     super.initState();
     _locationService = sdk.LocationService(_sdkContext);
-    _mapController.getMapAsync((map) {
-      _mapObjectManager = sdk.MapObjectManager(map);
-      // Add a hexagon around current camera center when map is ready
-      final center = map.camera.position.point;
-      if (_mapObjectManager != null) {
-        MapPainter(
-          _mapObjectManager!,
-        ).addHexagon(center, 200); // 200 meters radius
-      }
+    _checkLocationPermissions(_locationService).then((_) {
+      _mapController.getMapAsync((map) {
+        final locationSource = sdk.MyLocationMapObjectSource(_sdkContext);
+        map.addSource(locationSource);
+        map.camera.position = const sdk.CameraPosition(
+          point: sdk.GeoPoint(
+            latitude: sdk.Latitude(55.35),
+            longitude: sdk.Longitude(37.42),
+          ),
+          zoom: sdk.Zoom(10),
+        );
+      });
     });
   }
 
@@ -58,60 +59,55 @@ class _SimpleMapScreenState extends State<SimpleMapScreen> {
     }
   }
 
-  Future<void> _onGetLocationPressed() async {
-    await _checkLocationPermissions(_locationService);
-
-    final last = _locationService.lastLocation().value;
-    if (last == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location not available yet')),
-      );
-      return;
-    }
-
-    final coords = last.coordinates.value;
-    final lat = coords.latitude.value.toStringAsFixed(6);
-    final lon = coords.longitude.value.toStringAsFixed(6);
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Current location'),
-        content: Text('Latitude: $lat\nLongitude: $lon'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Map'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.my_location),
-            onPressed: _onGetLocationPressed,
-            tooltip: 'Get current location',
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Map')),
       body: sdk.MapWidget(
         sdkContext: _sdkContext,
         mapOptions: sdk.MapOptions(),
         controller: _mapController,
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: sdk.TrafficWidget(),
+                  ),
+                  Spacer(),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Column(
+                      children: [
+                        sdk.ZoomWidget(),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: sdk.CompassWidget(),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: sdk.MyLocationWidget(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                ],
+              ),
+              Align(alignment: Alignment.centerLeft, child: sdk.IndoorWidget()),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-// Minimal copy of AppContainer from example to initialize SDK.
 class AppContainer {
   static sdk.Context? _sdkContext;
 
