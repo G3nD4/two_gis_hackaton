@@ -1,7 +1,12 @@
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            // Kotlin DSL requires using uri(...) and assigning to 'url'
+            url = uri("https://artifactory.2gis.dev/sdk-maven-release")
+        }
     }
 }
 
@@ -11,8 +16,6 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 

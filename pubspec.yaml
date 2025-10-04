@@ -1,6 +1,7 @@
 name: two_gis_hackaton
 description: "A new Flutter project."
 publish_to: 'none'
+organization: ru.gishackathon
 
 version: 1.0.0+1
 
@@ -10,8 +11,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  dgis_mobile_sdk_full: ^12.8.0
+  permission_handler: ^11.3.1
+
 dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/models/
+    - assets/dgissdk.key
+    - assets/custom_styles.2gis
