@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:two_gis_hackaton/http/i_http_client.dart';
 
-const String _baseUrl = 'https://representations-dock-lucas-officer.trycloudflare.com';
+const String _baseUrl = 'https://renewable-rotary-clinton-rush.trycloudflare.com';
 
 final class AppHttpClient implements IHttpClient {
   /// Создает HTTP клиент

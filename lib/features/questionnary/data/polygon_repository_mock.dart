@@ -46,4 +46,7 @@ final class PolygonRepositoryMock implements IPolygonRepository {
       ],
     );
   }
+
+  @override
+  Stream<RankingModel?> watchPolygons(UserPreferences result) async* {}
 }

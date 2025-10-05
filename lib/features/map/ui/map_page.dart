@@ -46,7 +46,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _getPolygons() async {
     sl.get<IPrefsRepository>().getUserPreferences().then((prefs) {
       if (prefs != null) {
-        sl.get<IPolygonRepository>().getPolygons(prefs, 1).then((
+        sl.get<IPolygonRepository>().watchPolygons(prefs).listen((
           RankingModel? rank,
         ) {
           if (rank != null &&

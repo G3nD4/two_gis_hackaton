@@ -21,11 +21,35 @@ final class PolygonRepositoryImpl implements IPolygonRepository {
       data: result.toJson(),
       queryParameters: {'page': page, 'size': 100},
     );
-    print(response.data);
+    log('here: ${response.data}');
     if (response.statusCode != 200 || response.data == null) {
       return null;
     }
 
     return RankingModel.fromJson(response.data);
+  }
+
+  @override
+  Stream<RankingModel?> watchPolygons(UserPreferences result) async* {
+    RankingModel? rank = await getPolygons(result, 1);
+    if (rank == null) {
+      return;
+    }
+
+    yield rank;
+
+    for (int page = 2; page <= rank!.totalPages; page++) {
+      try {
+        rank = await getPolygons(result, page);
+        if (rank == null) {
+          log('Failed to fetch polygons for page $page');
+          return;
+        }
+        yield rank;
+      } catch (e) {
+        log('Error fetching polygons for page $page: $e');
+        break;
+      }
+    }
   }
 }
