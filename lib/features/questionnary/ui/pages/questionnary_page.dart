@@ -10,7 +10,7 @@ class QuestionnaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Опрос')),
+      appBar: AppBar(title: const Text('Выберите ваши интересы:')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: InterestsSurveyWidget(interests: interests),
