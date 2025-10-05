@@ -8,8 +8,7 @@ class PolygonModel {
   final double score;
 
   Color get color {
-    if (score < 0.6) return Colors.transparent;
-    if (score < 0.75) return Colors.orange.withAlpha(155);
+    if (score < 0.8) return Colors.transparent;
     if (score < 0.9) return Colors.yellow.withAlpha(155);
     return Colors.green.withAlpha(155);
   }
