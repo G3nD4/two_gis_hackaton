@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:two_gis_hackaton/core/di/service_locator.dart' as di;
 import 'package:two_gis_hackaton/core/launch_mode.dart';
 import 'package:two_gis_hackaton/core/i_startup_service.dart';
@@ -20,7 +21,10 @@ class App extends StatelessWidget {
 
     return MaterialApp(
       title: 'Two GIS Hackaton',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(textTheme: GoogleFonts.onestTextTheme()),
+      darkTheme: ThemeData(brightness: Brightness.dark, textTheme: GoogleFonts.onestTextTheme()),
+      themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
       home: SplashScreen(startupService: startupService),
     );
   }

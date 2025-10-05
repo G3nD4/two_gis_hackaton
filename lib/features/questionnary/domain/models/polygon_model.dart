@@ -8,9 +8,12 @@ class PolygonModel {
   final double score;
 
   Color get color {
-    if (score < 0.8) return Colors.transparent;
-    if (score < 0.9) return Colors.yellow.withAlpha(155);
-    return Colors.green.withAlpha(155);
+    if (score < 0.65) return Colors.transparent;
+    if (score < 0.75) return Color(0xFFF0FFCC).withAlpha(155);
+    if (score < 0.85) return Color(0xFFCCFF66).withAlpha(155);
+    if (score < 0.9) return Color(0xFF78DD67).withAlpha(155);
+    if (score < 0.98) return Color(0xFF109944).withAlpha(155);
+    return Color(0xFF004422).withAlpha(155);
   }
 
   factory PolygonModel.fromJson(Map<String, dynamic> json) {

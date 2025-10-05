@@ -48,7 +48,7 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
           (value) => {
             if (value && mounted)
               {
-                Navigator.of(context).pushReplacement(
+                Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const MapScreen()),
                 ),
               },
@@ -61,40 +61,35 @@ class _InterestsSurveyWidgetState extends State<InterestsSurveyWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Выберите ваши интересы:',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
         Expanded(
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 4,
-            children: widget.interests.map((interest) {
-              final isSelected = selectedInterests[interest.key] ?? false;
-              return OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: isSelected ? Colors.white : Colors.black,
-                  backgroundColor: isSelected
-                      ? const Color(0xFF2FAD00)
-                      : Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: widget.interests.map((interest) {
+                final isSelected = selectedInterests[interest.key] ?? false;
+                return OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isSelected ? Colors.white : Colors.black,
+                    backgroundColor: isSelected
+                        ? const Color(0xFF2FAD00)
+                        : Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    side: BorderSide(
+                      color: isSelected ? Colors.transparent : Colors.grey[400]!,
+                      width: 1,
+                    ),
                   ),
-                  side: BorderSide(
-                    color: isSelected ? Colors.transparent : Colors.grey[400]!,
-                    width: 1,
+                  onPressed: () => _toggleInterest(interest),
+                  child: Text(
+                    interest.value,
+                    style: const TextStyle(fontSize: 14),
                   ),
-                ),
-                onPressed: () => _toggleInterest(interest),
-                child: Text(
-                  interest.value,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
         SizedBox(
