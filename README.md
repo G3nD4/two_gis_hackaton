@@ -1,16 +1,22 @@
 # two_gis_hackaton
 
-A new Flutter project.
+Flutter app for 2gis hackathon.
 
-## Getting Started
+# Run
 
-This project is a starting point for a Flutter application.
+To run the app, clone this repository:
+```
+git clone https://github.com/G3nD4/two_gis_hackaton.git
+```
 
-A few resources to get you started if this is your first Flutter project:
+Get pub dependencies:
+```
+flutter pub get
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Run flutter app:
+```
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To install flutter, please follow the official guide: https://docs.flutter.dev/install/manual
