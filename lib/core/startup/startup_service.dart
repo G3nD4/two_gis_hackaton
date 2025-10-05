@@ -12,24 +12,37 @@ import 'package:two_gis_hackaton/core/i_startup_service.dart';
 final class StartupService implements IStartupService {
   final IHttpClient _httpClient;
 
-  StartupService({IHttpClient? httpClient}) : _httpClient = httpClient ?? AppHttpClient();
+  StartupService({IHttpClient? httpClient})
+    : _httpClient = httpClient ?? AppHttpClient();
 
   /// Implements IStartupService - attempts to fetch a list of survey
   /// interests/strings from the startup endpoint. This is a convenience
   /// adapter that maps the JSON result to List<String> when possible.
   @override
-  Future<List<String>> fetchSurveyData() async {
+  Future<List<SurveyData>> fetchSurveyData() async {
     final response = await _httpClient.get('/categories');
 
     if (response.statusCode != 200) {
       throw Exception('Failed to fetch survey data: ${response.statusCode}');
     }
 
-    if (response.data is List) {
-      return (response.data as List).map((e) => e.toString()).toList();
+    final List<SurveyData> data = [];
+    for (final k in (response.data as Map).keys) {
+      data.add(SurveyData.fromJson(k, response.data));
     }
 
     // Fallback: empty list
-    return <String>[];
+    return data;
   }
+}
+
+class SurveyData {
+  const SurveyData({required this.key, required this.value});
+
+  factory SurveyData.fromJson(String key, Map<String, dynamic> json) {
+    return SurveyData(key: key, value: json[key]);
+  }
+
+  final String key;
+  final String value;
 }

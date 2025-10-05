@@ -8,12 +8,14 @@ class PolygonModel {
   final double score;
 
   Color get color {
-    if (score < 0.5) return Colors.transparent;
-    return Color.lerp(Colors.yellow, Colors.green, score)!.withAlpha(155);
+    if (score < 0.6) return Colors.transparent;
+    if (score < 0.75) return Colors.orange.withAlpha(155);
+    if (score < 0.9) return Colors.yellow.withAlpha(155);
+    return Colors.green.withAlpha(155);
   }
 
   factory PolygonModel.fromJson(Map<String, dynamic> json) {
-    final String latlonString = json['wkt_latlon'] as String;
+    final String latlonString = json['wkt'] as String;
     // lon lat format
     if (latlonString.length < 11) {
       throw ArgumentError(

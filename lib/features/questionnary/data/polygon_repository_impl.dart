@@ -21,7 +21,7 @@ final class PolygonRepositoryImpl implements IPolygonRepository {
       data: result.toJson(),
       queryParameters: {'page': page, 'size': 100},
     );
-    print(response.data);
+    log('here: ${response.data}');
     if (response.statusCode != 200 || response.data == null) {
       return null;
     }
